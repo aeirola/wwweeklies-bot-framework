@@ -10,6 +10,10 @@
   },
   "author": "Axel Eirola <axel.eirola@futurice.com",
   "license": "MIT",
+  "engines": {
+    "node": "4.1.1",
+    "npm": "2.14.x"
+  },
   "dependencies": {
     "botbuilder": "^0.8.0",
     "restify": "^4.0.4",
