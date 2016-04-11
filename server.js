@@ -5,7 +5,7 @@ var yargs = require('yargs')
   .options({
     'i': {
       alias: 'id',
-      default: 'botsong',
+      default: 'wwweekliesBotFramework',
       describe: 'Bot connector appId',
       type: 'string'
     },
@@ -26,6 +26,7 @@ var yargs = require('yargs')
   .help('h')
   .alias('h', 'help')
   .argv;
+
 // Create bot and add dialogs
 var bot = new botbuilder.BotConnectorBot({
   appId: yargs.id,
@@ -36,6 +37,13 @@ require('./bot.js')(bot);
 // Setup Restify Server
 var server = restify.createServer();
 server.post('/api/messages', bot.verifyBotFramework(), bot.listen());
+
+// Serve certain static files
+server.get('/', restify.serveStatic({
+  directory: __dirname,
+  file: 'index.html'
+}));
+
 server.listen(yargs.port || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
