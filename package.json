@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "botbuilder": "^0.7.2",
+    "lodash": "^4.9.0",
     "restify": "^4.0.4",
     "yargs": "^4.4.0"
   },
