@@ -3,14 +3,15 @@ var path = require('path');
 var _ = require('lodash');
 var axios = require('axios');
 
-var HELP = '# Help\n' +
-  '- `help`\n' +
-  '- `next`\n' +
-  '- `prev`\n' +
-  '- `toc`';
+var HELP_SLIDE = '# Help\n' +
+  'Available commands:\n' +
+  '\n' +
+  '- *help*: This command.\n' +
+  '- *next*: Advance to next topic.\n' +
+  '- *prev*: Go to previous topic.\n' +
+  '- *topics*: Show a list of topics available.';
 
 var SLIDES = [];
-
 var ANALYSIS_THRESHOLD = 0.4;
 
 var RESPONSES = {
@@ -84,25 +85,37 @@ function preprocess(session) {
   });
 }
 
+function sendContent(session, slide) {
+  _.forEach(slide.split(/\n-{3,}\n/g), function(part, i) {
+    _.delay(function() {
+      session.send(part);
+    }, i*3000);
+  })
+}
+
 function sendHelp(session) {
-  return session.send(HELP);
+  return sendContent(session, HELP_SLIDE);
 }
 
 function sendTopics(session) {
   var toc = _.map(SLIDES, function(slide, index) {
-    return (index+1) + '. ' + _.startCase(slide.name);
+    var line = (index+1) + '. ' + _.startCase(slide.name);
+    if (index === _.get(session, 'dialogData.slideIndex', 0)) {
+      line += ' **<--**';
+    }
+    return line;
   });
 
-  return session.send('# Topics\n' + toc.join('\n'));
+  return sendContent(session, '# Topics\n' + toc.join('\n'));
 }
 
 function sendSlide(session, name) {
   var slide = _.find(SLIDES, {name: name});
 
   if (slide) {
-    return session.send(slide.content);
+    return sendContent(session, slide.content);
   } else {
-    return session.send('No such slide:' + name);
+    return sendContent(session, 'No such slide:' + name);
   }
 }
 
@@ -111,7 +124,7 @@ function sendNextSlide(session) {
   slideIndex = Math.min(slideIndex+1, SLIDES.length-1);
   _.set(session, 'dialogData.slideIndex', slideIndex);
 
-  return session.send(SLIDES[slideIndex].content);
+  return sendContent(session, SLIDES[slideIndex].content);
 }
 
 function sendPreviousSlide(session) {
@@ -119,7 +132,7 @@ function sendPreviousSlide(session) {
   slideIndex = Math.max(slideIndex-1, 0);
   _.set(session, 'dialogData.slideIndex', slideIndex);
 
-  return session.send(SLIDES[slideIndex].content);
+  return sendContent(session, SLIDES[slideIndex].content);
 }
 
 function sendReply(session) {
@@ -140,7 +153,7 @@ function sendReply(session) {
     return sendSlide(session, input.toLowerCase().replace(/^slide /, ''));
   }
 
-  return session.send('What do you mean?');
+  return sendContent(session, 'What do you mean?');
 }
 
 module.exports = function addDialogs(bot) {
