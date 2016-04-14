@@ -2,17 +2,43 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var axios = require('axios');
+var botbuilder = require('botbuilder');
+
+// LUIS
+var model = 'https://api.projectoxford.ai/luis/v1/application' +
+            '?id=f83b1f99-8f67-40c3-8301-a671d9111ecd'+
+            '&subscription-key=1e72765f59f54b9eb2f3745a1f80866e';
+var dialog = new botbuilder.LuisDialog(model);
+
+var ANALYSIS_THRESHOLD = 0.25;
+var SLIDE_PART_DELAY = 3000;
 
 var HELP_SLIDE = '# Help\n' +
   'Available commands:\n' +
   '\n' +
+  '- *hi*: Introduction.\n' +
   '- *help*: This command.\n' +
   '- *next*: Advance to next topic.\n' +
   '- *prev*: Go to previous topic.\n' +
   '- *topics*: Show a list of topics available.';
 
 var SLIDES = [];
-var ANALYSIS_THRESHOLD = 0.4;
+var SLIDE_NAMES = {
+  'start': 'intro',
+  'beginning': 'intro',
+  'introduction': 'intro',
+  'history': 'background',
+  'chat bots': 'bots',
+  'idea': 'promise',
+  'vale': 'promise',
+  'technology': 'tech',
+  'details': 'tech',
+  'feeling': 'impressions',
+  'feelings': 'impressions',
+  'thought': 'impressions',
+  'thoughts': 'impressions',
+  'about yourself': 'about'
+};
 
 var RESPONSES = {
   HATEFULL_INPUT: [
@@ -20,6 +46,12 @@ var RESPONSES = {
     'Watch your language.',
     'I don\'t need to listen to this kind of talk.',
     'I\'m a self-respecting bot, not some YouTube commenter.'
+  ],
+  UNKOWN_INPUT: [
+    'I\'m sorry, I didn\'t understand you.',
+    'Say what?',
+    'I have no idea what that means.',
+    'I don\'t even...'
   ]
 };
 
@@ -30,7 +62,7 @@ fs.readdir(SLIDES_PATH, function(err, files) {
     return;
   }
 
-  files.forEach(function(fileName) {
+  files.forEach(function(fileName, index) {
     var fileData = fs.readFileSync(path.join(SLIDES_PATH, fileName));
 
     var fileString = fileData.toString();
@@ -40,6 +72,7 @@ fs.readdir(SLIDES_PATH, function(err, files) {
 
     SLIDES.push({
       name: topicName,
+      index: index,
       content: fileString
     });
   })
@@ -89,7 +122,7 @@ function sendContent(session, slide) {
   _.forEach(slide.split(/\n-{3,}\n/g), function(part, i) {
     _.delay(function() {
       session.send(part);
-    }, i*3000);
+    }, i*SLIDE_PART_DELAY);
   })
 }
 
@@ -110,12 +143,14 @@ function sendTopics(session) {
 }
 
 function sendSlide(session, name) {
+  name = _.get(SLIDE_NAMES, name, name);
   var slide = _.find(SLIDES, {name: name});
 
   if (slide) {
+    _.set(session, 'dialogData.slideIndex', slide.index);
     return sendContent(session, slide.content);
   } else {
-    return sendContent(session, 'No such slide:' + name);
+    return sendContent(session, 'No such slide: ' + name);
   }
 }
 
@@ -138,13 +173,21 @@ function sendPreviousSlide(session) {
 function sendReply(session) {
   var input = session.message.text;
 
-  switch (input.toLowerCase()) {
+  switch (input.toLowerCase().replace(/\W/, '')) {
+    case 'hi':
+    case 'hello':
+      return sendSlide(session, 'intro');
+    case 'h':
     case 'help':
       return sendHelp(session);
+    case 't':
+    case 'toc':
     case 'topics':
       return sendTopics(session);
+    case 'n':
     case 'next':
       return sendNextSlide(session);
+    case 'p':
     case 'prev':
       return sendPreviousSlide(session);
   }
@@ -153,8 +196,39 @@ function sendReply(session) {
     return sendSlide(session, input.toLowerCase().replace(/^slide /, ''));
   }
 
-  return sendContent(session, 'What do you mean?');
+  // No base command found, start LUIS dialog
+  return dialog.begin(session);
 }
+
+dialog.on('Hello', function(session) {
+  return sendSlide(session, 'intro');
+});
+
+dialog.on('Help', function(session) {
+  return sendHelp(session);
+});
+
+dialog.on('Topics', function(session) {
+  return sendTopics(session);
+});
+
+dialog.on('Next Slide', function(session) {
+  return sendNextSlide(session);
+});
+
+dialog.on('Previous Slide', function(session) {
+  return sendPreviousSlide(session);
+});
+
+dialog.on('Go to slide', function(session, results) {
+  var slideNameEntity = _.get(_.find(_.get(results, 'entities', []), {type: 'Slide name'}), 'entity');
+  return sendSlide(session, slideNameEntity);
+});
+
+dialog.onDefault(function(session) {
+  session.send(_.sample(RESPONSES.UNKOWN_INPUT));
+});
+
 
 module.exports = function addDialogs(bot) {
   bot.add('/', function (session) {
