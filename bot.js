@@ -14,7 +14,7 @@ var dialog = new botbuilder.LuisDialog(model);
   Constants
 **/
 var ANALYSIS_THRESHOLD = 0.25;
-var SLIDE_PART_DELAY = 100;
+var MESSAGE_DELAY = 0;
 
 var HELP_SLIDE = '# Help\n' +
   'Available commands:\n' +
@@ -133,7 +133,7 @@ function sendContent(session, slide) {
   _.forEach(slide.split(/\n-{3,}\n/g), function(part, i) {
     _.delay(function() {
       session.send(part);
-    }, i*SLIDE_PART_DELAY);
+    }, i*MESSAGE_DELAY);
   })
 }
 
