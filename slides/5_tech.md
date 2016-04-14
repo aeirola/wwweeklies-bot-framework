@@ -33,5 +33,3 @@ To make your bots more powerful, MS also provides some [*cognitive services*](ht
 ## Bot service architecture
 
 ![Architecture diagram](http://yuml.me/dadafd12)
-
-<!-- Edit: http://yuml.me/edit/dadafd12 -->
