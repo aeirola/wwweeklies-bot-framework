@@ -138,7 +138,7 @@ function sendContent(session, slide) {
   })
 
   _.delay(function() {
-    session.send();
+    session.endDialog();
   }, parts.length*MESSAGE_DELAY);
 }
 
