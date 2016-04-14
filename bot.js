@@ -10,6 +10,9 @@ var model = 'https://api.projectoxford.ai/luis/v1/application' +
             '&subscription-key=1e72765f59f54b9eb2f3745a1f80866e';
 var dialog = new botbuilder.LuisDialog(model);
 
+/**
+  Constants
+**/
 var ANALYSIS_THRESHOLD = 0.25;
 var SLIDE_PART_DELAY = 3000;
 
@@ -78,6 +81,10 @@ fs.readdir(SLIDES_PATH, function(err, files) {
   })
 });
 
+
+/**
+  Input preprocessing
+**/
 function preprocess(session) {
   var inputText = session.message.text;
   console.log('Preprocessing input:', inputText);
@@ -118,6 +125,10 @@ function preprocess(session) {
   });
 }
 
+
+/**
+  Response handling
+**/
 function sendContent(session, slide) {
   _.forEach(slide.split(/\n-{3,}\n/g), function(part, i) {
     _.delay(function() {
@@ -170,9 +181,14 @@ function sendPreviousSlide(session) {
   return sendContent(session, SLIDES[slideIndex].content);
 }
 
+
+/**
+  Input handling
+**/
 function sendReply(session) {
   var input = session.message.text;
 
+  // Add handlers for basic commands
   switch (input.toLowerCase().replace(/\W/, '')) {
     case 'hi':
     case 'hello':
@@ -200,6 +216,7 @@ function sendReply(session) {
   return dialog.begin(session);
 }
 
+// Add handlers for LUIS intents
 dialog.on('Hello', function(session) {
   return sendSlide(session, 'intro');
 });
@@ -230,6 +247,9 @@ dialog.onDefault(function(session) {
 });
 
 
+/**
+  Bind bot dialgs
+**/
 module.exports = function addDialogs(bot) {
   bot.add('/', function (session) {
     preprocess(session).then(function(processed) {

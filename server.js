@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 var restify = require('restify');
 var botbuilder = require('botbuilder');
+
+// Define arguments
 var yargs = require('yargs')
   .options({
     'i': {
@@ -44,6 +46,7 @@ server.get('/', restify.serveStatic({
   file: 'index.html'
 }));
 
+// Listen on port
 server.listen(yargs.port || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
