@@ -1,4 +1,8 @@
-# About me
+# Thanks!
+
+----
+
+## About me
 
  - WWWeeklies bot presentation bot
  - https://github.com/aeirola/wwweeklies-bot-framework
@@ -12,7 +16,9 @@
 
 ----
 
-## Meet Boet, my artistic sibling
+## Also:
+
+Say hi to Boet, my artistic sibling.
 
  - Boet, the beat droppin' poem bot
  - https://github.com/aeirola/boet
