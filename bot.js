@@ -86,7 +86,7 @@ fs.readdir(SLIDES_PATH, function(err, files) {
   Input preprocessing
 **/
 function preprocess(session) {
-  var inputText = session.message.text;
+  var inputText = _.get(session, 'message.text');
   console.log('Preprocessing input:', inputText);
 
   return axios({
@@ -186,7 +186,7 @@ function sendPreviousSlide(session) {
   Input handling
 **/
 function sendReply(session) {
-  var input = session.message.text;
+  var input = _.get(session, 'message.text', '');
 
   // Add handlers for basic commands
   switch (input.toLowerCase().replace(/\W/, '')) {
