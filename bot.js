@@ -14,7 +14,7 @@ var dialog = new botbuilder.LuisDialog(model);
   Constants
 **/
 var ANALYSIS_THRESHOLD = 0.25;
-var SLIDE_PART_DELAY = 3000;
+var SLIDE_PART_DELAY = 0;
 
 var HELP_SLIDE = '# Help\n' +
   'Available commands:\n' +
