@@ -1,6 +1,6 @@
 # Bots
 
-The big players, along with startups, and VC money, is focusing on bots and discussion as the new UI paradigm. Chat bot platforms and services are making a comeback, while digital assistants are making it more mainstream to talk to your computer / phone.
+The big players, along with startups, and VC money, are now focusing on bots and discussion as the new UI paradigm. Chat bot platforms and services are making a comeback, while digital assistants are making it more mainstream to talk to your computer / phone.
 
 ---
 
@@ -25,4 +25,4 @@ The big players, along with startups, and VC money, is focusing on bots and disc
  - [Kik Bots](https://dev.kik.com/#/home)
  - [Slack Apps](https://slack.com/apps/build)
  - [Microsoft Bot Framework](https://dev.botframework.com/)
- - [Facebook Messenger Platform <sup>BETA</sup>](https://developers.facebook.com/products/messenger/)
+ - [Facebook Messenger Platform (BETA)](https://developers.facebook.com/products/messenger/)

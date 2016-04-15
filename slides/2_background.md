@@ -1,13 +1,18 @@
 # Background of service interactions
 
 1. PC software
+   - Poor discovery
    - Difficult to distribute
 2. Web sites
-   - Poor mobile performance
+   - Better discovery
+   - Poor mobile experience
 3. Mobile apps
-   - Platforms stagnated
    - App discovery
-   - Service specific accounts
+   - Stagnating platforms
+   - Fight for the home screen
+   - A lot of service specific accounts
 4. Chat bots (?)
-   - No app installs
-   - Identified by chat platform account
+   - No need for app installs
+   - Bot directories and "stores"
+   - Identification provided automatically by chat platform account
+   - Conversational UIs
